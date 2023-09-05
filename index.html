@@ -98,7 +98,7 @@
 			ctx.clearRect(800, 0, 1280, 800);
 			for(let i = 0; i < MAX_ROW_PALETTE; ++i) {
 				for(let j = 0; j < 16; ++j) {
-					if(paletteX == i && paletteY == j) {
+					if(paletteX == i && paletteY == j + paletteOffset) {
 						ctx.fillStyle = "rgba(252, 2, 14, 0.5)";
 						ctx.strokeStyle = "rgba(6, 18, 252, 0.5)";
 						ctx.fillRect(i * 48 + 800, j * 48, 48, 48);
