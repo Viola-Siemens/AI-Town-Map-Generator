@@ -1,0 +1,23 @@
+{
+	"project.title": "AI Town Map Generator",
+	"project.credits": "Credits",
+	"project.author": "Made by Liu Dongyu.",
+	"project.copyright": "Copyright © 2023. MIT License.",
+	"project.url": "Code Repository",
+	"project.startup": "How to Use?",
+	"project.startup.add_layer": "Adding a Layer",
+	"project.startup.object": "Objects",
+	"project.startup.edit": "Which file to edit?",
+	
+	"info.startup.add_layer": "The map can be multi-layered. If you place a sprite with transparent pixels, you may need to add another sprite under it - adding one more layer can work, and for most maps, it is recommend to add only two layers.",
+	"info.startup.object": "You can also add some objects, for example, trees, wells and pools, in your map. Players in the town will try to avoid them while walking.",
+	"info.startup.edit": "Edit \"convex/maps/firstmap.ts\" in AI-town project. Variable `bgtiles` is for the multi-layered background, and `objmap` is for the objects.",
+	
+	"button.objects": "Show/Hide Objects",
+	"button.copy": "Copy to Clipboard",
+	
+	"settings.map-size": "Size of Map:",
+	"settings.x-offset": "X-Offset:",
+	"settings.y-offset": "Y-Offset:",
+	"settings.palette-offset": "Sprite Palette Offset:"
+}

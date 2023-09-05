@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<script type="text/javascript" src="./js/localization.js"></script>
+	<script type="text/javascript">
+	function GetRequest() {
+		let url = location.search;
+		let reqs = new Object();
+		if (url.indexOf("?") != -1) {
+			let str = url.substr(1);
+			strs = str.split("&");
+			for(let i = 0; i < strs.length; i ++) {
+				reqs[strs[i].split("=")[0]] = strs[i].split("=")[1];
+			}
+		}
+		return reqs;
+	}
+	
+	var Request = GetRequest();
+	var lang = Request["lang"];
+	
+	if(lang) {
+		LANGUAGE_CODE = lang;
+	}
+	</script>
+	<title class="i18n" i18n-key="project.title"></title>
+</head>
+<body>
+	<p style="float:right"><a href="./?lang=en_us">English</a>　<a href="./?lang=zh_cn">简体中文</a></p>
+	<h1 class="i18n" i18n-key="project.title"></h1>
+	<h2 class="i18n" i18n-key="project.credits"></h2>
+	<p class="i18n" i18n-key="project.author"></p>
+	<p><span class="i18n" i18n-key="project.copyright"></span> <a href="https://github.com/Viola-Siemens/AI-Town-Map-Generator" class="i18n" i18n-key="project.url"></a></p>
+	<h2 class="i18n" i18n-key="project.startup"></h2>
+	<h3 class="i18n" i18n-key="project.startup.add_layer"></h3>
+	<p class="i18n" i18n-key="info.startup.add_layer"></p>
+	<h3 class="i18n" i18n-key="project.startup.object"></h3>
+	<p class="i18n" i18n-key="info.startup.object"></p>
+	<h3 class="i18n" i18n-key="project.startup.edit"></h3>
+	<p class="i18n" i18n-key="info.startup.edit"></p>
+	<div style="float:right" id="buttons">
+		<p><span class="i18n" i18n-key="settings.map-size"></span><input type="range" id="map-size" min="16" max="256" step="8" value="32" onchange="setMapSize()"/><span id="show-map-size">32</span></p><br/>
+		<p><span class="i18n" i18n-key="settings.x-offset"></span><input type="range" id="x-offset" min="0" max="8" step="1" value="0" onchange="setXOffset()"/><span id="show-x-offset">0</span></p><br/>
+		<p><span class="i18n" i18n-key="settings.y-offset"></span><input type="range" id="y-offset" min="0" max="8" step="1" value="0" onchange="setYOffset()"/><span id="show-y-offset">0</span></p><br/>
+		<p><span class="i18n" i18n-key="settings.palette-offset"></span><input type="range" id="palette-offset" min="0" max="212" step="1" value="0" onchange="setPaletteOffset()"/></p><br/>
+		<button class="i18n" i18n-key="button.objects" id="show-hide-objects"></button><br/>
+		<button class="i18n" i18n-key="button.copy" onclick="copy()"></button>
+	</div>
+	<canvas id="canvas" width="1280px" height="800px">Your browser does not support HTML5 canvas label.</canvas>
+	<script type="text/javascript">
+		const MAX_SHOWN = 25;
+		const MAX_ROW_PALETTE = 10;
+		var screenxtiles = 32;
+		var screenytiles = 32;
+		var xOffset = 0;
+		var yOffset = 0;
+		var paletteOffset = 0;
+		var bgtiles = [[]];
+		var objmap = [];
+		
+		let layer = 0;
+		let showObj = false;
+		let selectedX = -1;
+		let selectedY = -1;
+		let paletteX = -1;
+		let paletteY = -1;
+		
+		let mouseDown = false;
+		
+		function index2xy(ind) {
+			return [Math.floor(ind / 50), ind % 50];
+		}
+		
+		var canvas = document.getElementById('canvas');
+		canvas.addEventListener('click', e => canvasClick(e));
+		canvas.addEventListener('dblclick', e => canvasDblClick(e));
+		canvas.addEventListener('wheel', e => onMouseWheel(e));
+		canvas.addEventListener('mousedown', e => mouseDown = true);
+		canvas.addEventListener('mouseup', e => mouseDown = false);
+		canvas.addEventListener('mousemove', e => onMouseMove(e));
+		var ctx = canvas.getContext('2d');
+		var img = new Image();
+		img.src = "./img/rpg-tileset.png";
+		img.onload = () => showObjects(false);
+		ctx.fillStyle = "rgba(240, 8, 24, 0.25)";
+		ctx.strokeStyle = "rgba(8, 24, 240, 0.5)";
+		resetArray();
+		redraw();
+		
+		function showObjects(v) {
+			showObj = v;
+			document.getElementById("show-hide-objects").onclick = () => showObjects(!v);
+			redrawObjects();
+		}
+		
+		function redrawObjects() {
+			ctx.clearRect(800, 0, 1280, 800);
+			for(let i = 0; i < MAX_ROW_PALETTE; ++i) {
+				for(let j = 0; j < 16; ++j) {
+					if(paletteX == i && paletteY == j) {
+						ctx.fillStyle = "rgba(252, 2, 14, 0.5)";
+						ctx.strokeStyle = "rgba(6, 18, 252, 0.5)";
+						ctx.fillRect(i * 48 + 800, j * 48, 48, 48);
+						ctx.strokeRect(i * 48 + 800, j * 48, 48, 48);
+						ctx.fillStyle = "rgba(240, 8, 24, 0.1)";
+						ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
+					}
+					xy = index2xy((j + paletteOffset) * MAX_ROW_PALETTE + i);
+					ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, i * 48 + 808, j * 48 + 8, 32, 32);
+				}
+			}
+		}
+		
+		function resetArray() {
+			for(let l = 0; l < bgtiles.length; ++l) {
+				let temp = bgtiles[l];
+				bgtiles[l] = [];
+				for(let i = 0; i < screenxtiles; ++i) {
+					let a = [];
+					for(let j = 0; j < screenytiles; ++j) {
+						a.push(temp[i] === undefined ? -1 : temp[i][j] === undefined ? -1 : temp[i][j]);
+					}
+					bgtiles[l].push(a);
+				}
+			}
+			let temp = objmap;
+			objmap = [];
+			for(let i = 0; i < screenxtiles; ++i) {
+				let b = [];
+				for(let j = 0; j < screenytiles; ++j) {
+					b.push(temp[i] === undefined ? -1 : temp[i][j] === undefined ? -1 : temp[i][j]);
+				}
+				objmap.push(b);
+			}
+		}
+		
+		function redraw() {
+			ctx.clearRect(0, 0, 800, 800);
+			ctx.fillStyle = "rgba(240, 8, 24, 0.1)";
+			ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
+			for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
+				for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
+					if(selectedX == i && selectedY == j) {
+						ctx.fillStyle = "rgba(252, 2, 14, 0.5)";
+						ctx.strokeStyle = "rgba(6, 18, 252, 0.5)";
+						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.fillStyle = "rgba(240, 8, 24, 0.1)";
+						ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
+					} else {
+						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+					}
+					if(bgtiles[layer][j][i] != -1) {
+						xy = index2xy(bgtiles[layer][j][i]);
+						ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+					}
+					if(showObj) {
+						if(objmap[j][i] != -1) {
+							xy = index2xy(objmap[j][i]);
+							ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						}
+					}
+				}
+			}
+		}
+		
+		function copy() {
+			navigator.clipboard.writeText(`export const bgtiles = ${JSON.stringify(bgtiles)};\nexport const objmap = ${JSON.stringify(objmap)};`)
+				.then(() => alert("Successfully Copied!"))
+				.catch((e) => console.error(e.message));
+		}
+		
+		function setMapSize() {
+			let newSize = parseInt(document.getElementById("map-size").value);
+			document.getElementById("x-offset").max = document.getElementById("y-offset").max = newSize - MAX_SHOWN + 1;
+			xOffset = parseInt(document.getElementById("x-offset").value);
+			document.getElementById("show-x-offset").innerText = xOffset;
+			yOffset = parseInt(document.getElementById("y-offset").value);
+			document.getElementById("show-y-offset").innerText = yOffset;
+			
+			screenxtiles = screenytiles = newSize;
+			document.getElementById("show-map-size").innerText = newSize;
+			resetArray();
+			redraw();
+		}
+		
+		function setXOffset() {
+			xOffset = parseInt(document.getElementById("x-offset").value);
+			document.getElementById("show-x-offset").innerText = xOffset;
+			redraw();
+		}
+		
+		function setYOffset() {
+			yOffset = parseInt(document.getElementById("y-offset").value);
+			document.getElementById("show-y-offset").innerText = yOffset;
+			redraw();
+		}
+		function setPaletteOffset() {
+			paletteOffset = parseInt(document.getElementById("palette-offset").value);
+			redrawObjects();
+		}
+		
+		function canvasClick(e) {
+			if(e.offsetX < 800) {
+				selectedX = Math.floor(e.offsetX / 32) + xOffset;
+				selectedY = Math.floor(e.offsetY / 32) + yOffset;
+				if(paletteX > -1 && paletteY > -1) {
+					bgtiles[layer][selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
+				}
+			} else {
+				paletteX = paletteY = -1;
+				if(selectedX > -1 && selectedY > -1) {
+					let x = Math.floor((e.offsetX - 800) / 48);
+					let y = Math.floor(e.offsetY / 48) + paletteOffset;
+					bgtiles[layer][selectedY][selectedX] = y * MAX_ROW_PALETTE + x;
+				}
+				redrawObjects();
+			}
+			redraw();
+		}
+		
+		function canvasDblClick(e) {
+			if(e.offsetX < 800) {
+				selectedX = Math.floor(e.offsetX / 32) + xOffset;
+				selectedY = Math.floor(e.offsetY / 32) + yOffset;
+				bgtiles[layer][selectedY][selectedX] = -1;
+				selectedX = selectedY = -1;
+			} else {
+				paletteX = Math.floor((e.offsetX - 800) / 48);
+				paletteY = Math.floor(e.offsetY / 48) + paletteOffset;
+				redrawObjects();
+			}
+			redraw();
+		}
+		
+		function onMouseWheel(e) {
+			e.preventDefault();
+			if(e.offsetX < 800) {
+				if(e.deltaY > 0) {
+					document.getElementById("y-offset").value = yOffset + 1;
+				} else {
+					document.getElementById("y-offset").value = yOffset - 1;
+				}
+				setYOffset();
+			} else {
+				if(e.deltaY > 0) {
+					document.getElementById("palette-offset").value = paletteOffset + 1;
+				} else {
+					document.getElementById("palette-offset").value = paletteOffset - 1;
+				}
+				setPaletteOffset();
+			}
+		}
+		
+		function onMouseMove(e) {
+			if(mouseDown && e.offsetX < 800 && paletteX > -1 && paletteY > -1) {
+				selectedX = Math.floor(e.offsetX / 32) + xOffset;
+				selectedY = Math.floor(e.offsetY / 32) + yOffset;
+				bgtiles[layer][selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
+			redraw();
+			}
+		}
+	</script>
+</body>
+</html>

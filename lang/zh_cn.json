@@ -1,0 +1,23 @@
+{
+	"project.title": "AI小镇地图生成器",
+	"project.credits": "项目信息",
+	"project.author": "制作人：刘冬煜。",
+	"project.copyright": "Copyright © 2023。以 MIT 协议开源。",
+	"project.url": "代码仓库",
+	"project.startup": "如何使用？",
+	"project.startup.add_layer": "添加一个层",
+	"project.startup.object": "放置障碍物",
+	"project.startup.edit": "修改什么文件？",
+	
+	"info.startup.add_layer": "地图可以包含多个层。如果你放置了一个透明背景的贴图，你或许需要在它的下方放置另一个背景贴图——添加一层便可实现这个需求，并且对于多数地图而言，推荐你只需放置两层即可。",
+	"info.startup.object": "你可以在地图中放置障碍物，例如树、井和水池。小镇居民们将会在寻路时避免经过这些物体。",
+	"info.startup.edit": "修改AI小镇项目中的\"convex/maps/firstmap.ts\"文件。变量`bgtiles`即为多层的背景，而`objmap`则存放了障碍物。",
+	
+	"button.objects": "显示/隐藏障碍物",
+	"button.copy": "复制到剪贴板",
+	
+	"settings.map-size": "地图尺寸：",
+	"settings.x-offset": "水平偏移：",
+	"settings.y-offset": "垂直偏移：",
+	"settings.palette-offset": "贴图调色板偏移："
+}
