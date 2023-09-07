@@ -24,6 +24,50 @@
 		LANGUAGE_CODE = lang;
 	}
 	</script>
+	<style>
+		.clickRightMenu{
+			background-color: #fff;
+			font-size: 12px;
+			position: absolute;
+			text-align: left;
+			padding: 2px 0;
+			border:1px solid #ccc;
+			display: none;
+			z-index: 100;
+		}
+		.clickRightMenu li{
+			list-style: none;
+			line-height: 20px;
+			padding-left: 25px;
+		}
+		.clickRightMenu li:hover{
+			background-color: #dcdcdc;
+			cursor: pointer;
+		}
+		
+		.input {
+			float: right;
+			margin-left: auto;
+			margin-right: 0;
+			width: 320px;
+		}
+		
+		textarea.input {
+			height: 200px;
+		}
+		
+		textarea.input {
+			height: 200px;
+		}
+		
+		p.input-parent {
+			height: 200px;
+		}
+		
+		input[type="range"] {
+			width: 240px;
+		}
+	</style>
 	<title class="i18n" i18n-key="project.title"></title>
 </head>
 <body>
@@ -44,10 +88,78 @@
 		<p><span class="i18n" i18n-key="settings.x-offset"></span><input type="range" id="x-offset" min="0" max="8" step="1" value="0" onchange="setXOffset()"/><span id="show-x-offset">0</span></p><br/>
 		<p><span class="i18n" i18n-key="settings.y-offset"></span><input type="range" id="y-offset" min="0" max="8" step="1" value="0" onchange="setYOffset()"/><span id="show-y-offset">0</span></p><br/>
 		<p><span class="i18n" i18n-key="settings.palette-offset"></span><input type="range" id="palette-offset" min="0" max="212" step="1" value="0" onchange="setPaletteOffset()"/></p><br/>
-		<button class="i18n" i18n-key="button.objects" id="show-hide-objects"></button><br/>
-		<button class="i18n" i18n-key="button.copy" onclick="copy()"></button>
+		<p><span class="i18n" i18n-key="settings.current-layer"></span><input type="range" id="current-layer" min="0" max="0" step="1" value="0" onchange="setLayer()"/><span id="show-layer">0</span></p><br/>
+		<p class="button-parent"><button class="i18n" i18n-key="button.add-layer" onclick="addLayer()"></button>&nbsp;<button class="i18n" i18n-key="button.remove-layer" onclick="removeLayer()"></button></p>
+		<p class="button-parent"><button class="i18n" i18n-key="button.objects" id="show-hide-objects"></button></p>
+		<p class="button-parent"><button class="i18n" i18n-key="button.copy" onclick="copy()"></button></p>
+		<p>screenxtiles = <input type="text" id="screenxtiles" value="32" class="input" /></p>
+		<p>screenytiles = <input type="text" id="screenytiles" value="32" class="input" /></p>
+		<p class="input-parent">bgtiles = <textarea id="bgtiles" class="input">[
+  [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 51, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, 51, 51, -1, -1, 51, 51, 51, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 51, -1, -1, -1, -1, -1, 51, 51, 51, -1, 51, 51, 51, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, 51, 51, 51, -1, 51, 51, 51, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, 51, 51, -1, -1, 51, 51, 51, 51, 51, 51, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, 51, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, 51, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, -1],
+    [-1, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 51, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+  ],
+  [
+    [  0,   1,   1,    1,   1,   1,   1,   1,   1,    1,   1,   1,    1,    1,    1,    1,   1,   1,   1,   1,   1,    1,    1,   2],
+    [ 50,  51,   51,   51,  51,  51,  455, 456, 457,  51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  555, 459, 507,  51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   1312, 51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  505, 507,  51,  51,  900,  901,  901,  901,  901,  902,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  1312, 51,   51,  51,  51,  51,  505, 508,  457, 51,  950,  951,  951,  951,  951,  952,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  505, 458,  557, 51,  950,  951,  951,  951,  951,  952,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  505, 507,  51,  51,  1000, 1001, 1001, 1001, 1001, 1002, 51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  505, 507,  51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  505, 507,  51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  455,  456,  456, 456, 456, 456, 509, 508,  456, 456, 456,  456,  456,  456,  456, 456, 456, 456, 456, 456,  456,  457, 52],
+    [ 50,  555,  556,  556, 556, 556, 556, 556, 556,  556, 556, 556,  556,  556,  556,  556, 556, 556, 556, 556, 556,  556,  557, 52],
+    [ 50,  51,   51,   51,  51,  51,  51,  51,  51,   51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   1312, 51,  51,  51,  51,  51,  51,   51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  51,  1312, 51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  51,   51,   51,  52],
+    [ 50,  51,   51,   51,  51,  51,  51,  51,  51,   51,  51,  51,   51,   51,   51,   51,  51,  51,  51,  51,  1312, 51,   51,  52],
+    [100,  101,  101, 101,  101, 101, 101, 101, 101,  101, 101, 101,  101,  101,  101,  101, 101, 101, 101, 101, 101,  101,  101, 102]
+  ]
+]</textarea></p>
+		<p class="input-parent">objmap = <textarea id="objmap" class="input">[
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   5,   6,    7,    -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   55,  56,   57,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   1310, -1,   -1, -1],
+  [-1, -1,   -1,   105,  106, 107,  -1, -1, -1, -1, -1, -1, -1,   -1,  -1, -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, 1213, 1213,  1213, 1213, -1, -1, 4571, 1308, 1309, -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   1258, -1, -1, -1, -1, -1, -1, 1213, 1213,  1213, 1213, -1, -1, 5571, 1358, 1359, -1,   -1, -1],
+  [-1, -1,   1350, -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   1208, -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   1300, -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, 1310, -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1],
+  [-1, -1,   -1,   -1,  -1,   -1,   -1, -1, -1, -1, -1, -1, -1,   -1,  -1,  -1, -1, -1, -1,   -1,   -1,   -1,   -1, -1]
+]</textarea></p>
+		<button class="i18n" i18n-key="button.load" onclick="load()"></button>
 	</div>
 	<canvas id="canvas" width="1280px" height="800px">Your browser does not support HTML5 canvas label.</canvas>
+	<ul class="clickRightMenu" id="clickRightMenu">
+		<li class="i18n" i18n-key="button.place" id="right-click-place"></li>
+		<li class="i18n" i18n-key="button.select" id="right-click-select"></li>
+		<li class="i18n" i18n-key="button.clear" id="right-click-clear"></li>
+		<li class="i18n" i18n-key="button.tile" id="right-click-tile"></li>
+		<li class="i18n" i18n-key="button.cancel" id="right-click-cancel"></li>
+	</ul>
 	<script type="text/javascript">
 		const MAX_SHOWN = 25;
 		const MAX_ROW_PALETTE = 10;
@@ -56,10 +168,10 @@
 		var xOffset = 0;
 		var yOffset = 0;
 		var paletteOffset = 0;
+		var layer = 0;
 		var bgtiles = [[]];
 		var objmap = [];
 		
-		let layer = 0;
 		let showObj = false;
 		let selectedX = -1;
 		let selectedY = -1;
@@ -72,6 +184,8 @@
 			return [Math.floor(ind / 50), ind % 50];
 		}
 		
+		var clickRightHtml = document.getElementById("clickRightMenu");
+		
 		var canvas = document.getElementById('canvas');
 		canvas.addEventListener('click', e => canvasClick(e));
 		canvas.addEventListener('dblclick', e => canvasDblClick(e));
@@ -79,10 +193,73 @@
 		canvas.addEventListener('mousedown', e => mouseDown = true);
 		canvas.addEventListener('mouseup', e => mouseDown = false);
 		canvas.addEventListener('mousemove', e => onMouseMove(e));
+		canvas.oncontextmenu = e => {
+			event = e || window.event;
+			if(event.offsetX >= 800) {
+				paletteX = Math.floor((event.offsetX - 800) / 48);
+				paletteY = Math.floor(event.offsetY / 48) + paletteOffset;
+				redrawObjects();
+				clickRightHtml.style.display = "block";
+				clickRightHtml.style.left = event.pageX + "px";
+				clickRightHtml.style.top = event.pageY + "px";
+				return false;
+			}
+			return true;
+		}
+		document.getElementById("right-click-place").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(paletteX > -1 && paletteY > -1) {
+				if(selectedX > -1 && selectedY > -1) {
+					bgtiles[layer][selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
+					redraw();
+				}
+				paletteX = paletteY = -1;
+				redrawObjects();
+			}
+		});
+		document.getElementById("right-click-select").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+		});
+		document.getElementById("right-click-clear").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(selectedX > -1 && selectedY > -1) {
+				bgtiles[layer][selectedY][selectedX] = -1;
+				selectedX = selectedY = -1;
+				redraw();
+			}
+			if(paletteX > -1 && paletteY > -1) {
+				paletteX = paletteY = -1;
+				redrawObjects();
+			}
+		});
+		document.getElementById("right-click-tile").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(paletteX > -1 && paletteY > -1) {
+				let ans = paletteY * MAX_ROW_PALETTE + paletteX;
+				for(let i = 0; i < screenxtiles; ++i) {
+					for(let j = 0; j < screenytiles; ++j) {
+						if(bgtiles[layer][i][j] < 0) {
+							bgtiles[layer][i][j] = ans;
+						}
+					}
+				}
+				paletteX = paletteY = -1;
+				redrawObjects();
+				redraw();
+			}
+		});
+		document.getElementById("right-click-cancel").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(paletteX > -1 && paletteY > -1) {
+				paletteX = paletteY = -1;
+				redrawObjects();
+			}
+		});
 		var ctx = canvas.getContext('2d');
 		var img = new Image();
 		img.src = "./img/rpg-tileset.png";
-		img.onload = () => showObjects(false);
+		img.onload = () => redrawObjects();
+		document.getElementById("show-hide-objects").onclick = () => showObjects(true);
 		ctx.fillStyle = "rgba(240, 8, 24, 0.25)";
 		ctx.strokeStyle = "rgba(8, 24, 240, 0.5)";
 		resetArray();
@@ -91,7 +268,7 @@
 		function showObjects(v) {
 			showObj = v;
 			document.getElementById("show-hide-objects").onclick = () => showObjects(!v);
-			redrawObjects();
+			redraw();
 		}
 		
 		function redrawObjects() {
@@ -112,14 +289,18 @@
 			}
 		}
 		
+		function isUndefinedOrNull(x) {
+			return x === undefined || x === null;
+		}
+		
 		function resetArray() {
 			for(let l = 0; l < bgtiles.length; ++l) {
-				let temp = bgtiles[l];
+				let temp = bgtiles[l] || [];
 				bgtiles[l] = [];
 				for(let i = 0; i < screenxtiles; ++i) {
 					let a = [];
 					for(let j = 0; j < screenytiles; ++j) {
-						a.push(temp[i] === undefined ? -1 : temp[i][j] === undefined ? -1 : temp[i][j]);
+						a.push(isUndefinedOrNull(temp[i]) ? -1 : isUndefinedOrNull(temp[i][j]) ? -1 : temp[i][j]);
 					}
 					bgtiles[l].push(a);
 				}
@@ -129,7 +310,7 @@
 			for(let i = 0; i < screenxtiles; ++i) {
 				let b = [];
 				for(let j = 0; j < screenytiles; ++j) {
-					b.push(temp[i] === undefined ? -1 : temp[i][j] === undefined ? -1 : temp[i][j]);
+					b.push(isUndefinedOrNull(temp[i]) ? -1 : isUndefinedOrNull(temp[i][j]) ? -1 : temp[i][j]);
 				}
 				objmap.push(b);
 			}
@@ -152,11 +333,21 @@
 						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
 						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
 					}
-					if(bgtiles[layer][j][i] != -1) {
-						xy = index2xy(bgtiles[layer][j][i]);
-						ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+				}
+			}
+			for(let l = 0; l <= layer; ++l) {
+				for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
+					for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
+						if(bgtiles[l][j][i] != -1) {
+							xy = index2xy(bgtiles[l][j][i]);
+							ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						}
 					}
-					if(showObj) {
+				}
+			}
+			if(showObj) {
+				for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
+					for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
 						if(objmap[j][i] != -1) {
 							xy = index2xy(objmap[j][i]);
 							ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
@@ -167,9 +358,55 @@
 		}
 		
 		function copy() {
-			navigator.clipboard.writeText(`export const bgtiles = ${JSON.stringify(bgtiles)};\nexport const objmap = ${JSON.stringify(objmap)};`)
+			document.getElementById("screenxtiles").value = screenxtiles;
+			document.getElementById("screenytiles").value = screenxtiles;
+			document.getElementById("bgtiles").value = JSON.stringify(bgtiles);
+			document.getElementById("objmap").value = JSON.stringify(objmap);
+			navigator.clipboard.writeText(`export const screenxtiles = ${screenxtiles};\nexport const screenytiles = ${screenytiles};\nexport const bgtiles = ${JSON.stringify(bgtiles)};\nexport const objmap = ${JSON.stringify(objmap)};`)
 				.then(() => alert("Successfully Copied!"))
 				.catch((e) => console.error(e.message));
+		}
+		
+		function load() {
+			try {
+				let newSize = Math.min(
+					(Math.floor((Math.max(
+						parseInt(document.getElementById("screenxtiles").value),
+						parseInt(document.getElementById("screenytiles").value)
+					) - 1) / 8) + 1) * 8, 256
+				);
+				document.getElementById("x-offset").max = document.getElementById("y-offset").max = newSize - MAX_SHOWN + 1;
+				xOffset = parseInt(document.getElementById("x-offset").value);
+				document.getElementById("show-x-offset").innerText = xOffset;
+				yOffset = parseInt(document.getElementById("y-offset").value);
+				document.getElementById("show-y-offset").innerText = yOffset;
+				screenxtiles = screenytiles = newSize;
+				document.getElementById("map-size").value = newSize;
+				document.getElementById("show-map-size").innerText = newSize;
+				let bgtiles2 = JSON.parse(document.getElementById("bgtiles").value);
+				let objmap2 = JSON.parse(document.getElementById("objmap").value);
+				bgtiles.length = bgtiles2.length;
+				document.getElementById("current-layer").max = bgtiles2.length - 1;
+				layer = parseInt(document.getElementById("current-layer").value);
+				document.getElementById("show-layer").innerText = layer;
+				resetArray();
+				for(let l = 0; l < bgtiles.length; ++l) {
+					for(let i = 0; i < screenxtiles && i < bgtiles2[l].length; ++i) {
+						for(let j = 0; j < screenytiles && j < bgtiles2[l][i].length; ++j) {
+							bgtiles[l][i][j] = isUndefinedOrNull(bgtiles2[l][i][j]) ? -1 : bgtiles2[l][i][j];
+						}
+					}
+				}
+				for(let i = 0; i < screenxtiles && i < objmap2.length; ++i) {
+					for(let j = 0; j < screenytiles && j < objmap2[i].length; ++j) {
+						objmap[i][j] = isUndefinedOrNull(objmap2[i][j]) ? -1 : objmap2[i][j];
+					}
+				}
+				redraw();
+			} catch(e) {
+				console.error(e);
+				alert("Failed to load parameters.");
+			}
 		}
 		
 		function setMapSize() {
@@ -191,7 +428,6 @@
 			document.getElementById("show-x-offset").innerText = xOffset;
 			redraw();
 		}
-		
 		function setYOffset() {
 			yOffset = parseInt(document.getElementById("y-offset").value);
 			document.getElementById("show-y-offset").innerText = yOffset;
@@ -200,6 +436,29 @@
 		function setPaletteOffset() {
 			paletteOffset = parseInt(document.getElementById("palette-offset").value);
 			redrawObjects();
+		}
+		function setLayer() {
+			layer = parseInt(document.getElementById("current-layer").value);
+			document.getElementById("show-layer").innerText = layer;
+			redraw();
+		}
+		function addLayer() {
+			let temp = [];
+			for(let i = 0; i < screenxtiles; ++i) {
+				let a = [];
+				for(let j = 0; j < screenytiles; ++j) {
+					a.push(-1);
+				}
+				temp.push(a);
+			}
+			bgtiles.push(temp);
+			document.getElementById("current-layer").max = bgtiles.length - 1;
+		}
+		function removeLayer() {
+			while(bgtiles.length > layer + 1) {
+				bgtiles.pop();
+			}
+			document.getElementById("current-layer").max = bgtiles.length - 1;
 		}
 		
 		function canvasClick(e) {

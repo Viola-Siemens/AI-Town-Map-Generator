@@ -13,11 +13,21 @@
 	"info.startup.object": "You can also add some objects, for example, trees, wells and pools, in your map. Players in the town will try to avoid them while walking.",
 	"info.startup.edit": "Edit \"convex/maps/firstmap.ts\" in AI-town project. Variable `bgtiles` is for the multi-layered background, and `objmap` is for the objects.",
 	
+	"button.add-layer": "Add a Layer at the Top",
+	"button.remove-layer": "Remove all Layers above this Layer",
 	"button.objects": "Show/Hide Objects",
 	"button.copy": "Copy to Clipboard",
+	"button.load": "Load",
+	
+	"button.place": "Place to selected block (left click)",
+	"button.select": "Select (double click)",
+	"button.clear": "Clear Block (double click block)",
+	"button.tile": "Tile all empty blocks in this layer",
+	"button.cancel": "Cancel",
 	
 	"settings.map-size": "Size of Map:",
 	"settings.x-offset": "X-Offset:",
 	"settings.y-offset": "Y-Offset:",
-	"settings.palette-offset": "Sprite Palette Offset:"
+	"settings.palette-offset": "Sprite Palette Offset:",
+	"settings.current-layer": "Editing Number of Layer:"
 }

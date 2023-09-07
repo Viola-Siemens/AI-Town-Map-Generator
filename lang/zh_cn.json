@@ -13,11 +13,21 @@
 	"info.startup.object": "你可以在地图中放置障碍物，例如树、井和水池。小镇居民们将会在寻路时避免经过这些物体。",
 	"info.startup.edit": "修改AI小镇项目中的\"convex/maps/firstmap.ts\"文件。变量`bgtiles`即为多层的背景，而`objmap`则存放了障碍物。",
 	
+	"button.add-layer": "在最上方添加一层",
+	"button.remove-layer": "删除当前层之上的所有层",
 	"button.objects": "显示/隐藏障碍物",
 	"button.copy": "复制到剪贴板",
+	"button.load": "加载",
+	
+	"button.place": "放置到选中格子（单击）",
+	"button.select": "选中贴图（双击）",
+	"button.clear": "清除格子（双击格子）",
+	"button.tile": "平铺本层剩余格子",
+	"button.cancel": "取消",
 	
 	"settings.map-size": "地图尺寸：",
 	"settings.x-offset": "水平偏移：",
 	"settings.y-offset": "垂直偏移：",
-	"settings.palette-offset": "贴图调色板偏移："
+	"settings.palette-offset": "贴图调色板偏移：",
+	"settings.current-layer": "正在编辑的层号："
 }
