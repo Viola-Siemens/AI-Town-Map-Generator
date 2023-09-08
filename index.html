@@ -83,13 +83,22 @@
 	<p class="i18n" i18n-key="info.startup.object"></p>
 	<h3 class="i18n" i18n-key="project.startup.edit"></h3>
 	<p class="i18n" i18n-key="info.startup.edit"></p>
+	<h2 class="i18n" i18n-key="project.usage"></h2>
+	<h3 class="i18n" i18n-key="project.usage.place_as_background"></h3>
+	<p class="i18n" i18n-key="info.usage.place_as_background"></p>
+	<h3 class="i18n" i18n-key="project.usage.erasing"></h3>
+	<p class="i18n" i18n-key="info.usage.erasing"></p>
+	<h3 class="i18n" i18n-key="project.usage.quick_filling"></h3>
+	<p class="i18n" i18n-key="info.usage.quick_filling"></p>
+	<h3 class="i18n" i18n-key="project.usage.offset"></h3>
+	<p class="i18n" i18n-key="info.usage.offset"></p>
 	<div style="float:right" id="buttons">
 		<p><span class="i18n" i18n-key="settings.map-size"></span><input type="range" id="map-size" min="16" max="256" step="8" value="32" onchange="setMapSize()"/><span id="show-map-size">32</span></p><br/>
 		<p><span class="i18n" i18n-key="settings.x-offset"></span><input type="range" id="x-offset" min="0" max="8" step="1" value="0" onchange="setXOffset()"/><span id="show-x-offset">0</span></p><br/>
 		<p><span class="i18n" i18n-key="settings.y-offset"></span><input type="range" id="y-offset" min="0" max="8" step="1" value="0" onchange="setYOffset()"/><span id="show-y-offset">0</span></p><br/>
 		<p><span class="i18n" i18n-key="settings.palette-offset"></span><input type="range" id="palette-offset" min="0" max="212" step="1" value="0" onchange="setPaletteOffset()"/></p><br/>
 		<p><span class="i18n" i18n-key="settings.current-layer"></span><input type="range" id="current-layer" min="0" max="0" step="1" value="0" onchange="setLayer()"/><span id="show-layer">0</span></p><br/>
-		<p class="button-parent"><button class="i18n" i18n-key="button.add-layer" onclick="addLayer()"></button>&nbsp;<button class="i18n" i18n-key="button.remove-layer" onclick="removeLayer()"></button></p>
+		<p class="button-parent"><button class="i18n" i18n-key="button.add-layer" onclick="addLayer()"></button>&nbsp;<button class="i18n" i18n-key="button.remove-layer" onclick="removeLayer()">&nbsp;<button class="i18n" i18n-key="button.clear-layer" onclick="clearLayer()"></button></p>
 		<p class="button-parent"><button class="i18n" i18n-key="button.objects" id="show-hide-objects"></button></p>
 		<p class="button-parent"><button class="i18n" i18n-key="button.copy" onclick="copy()"></button></p>
 		<p>screenxtiles = <input type="text" id="screenxtiles" value="32" class="input" /></p>
@@ -155,10 +164,18 @@
 	<canvas id="canvas" width="1280px" height="800px">Your browser does not support HTML5 canvas label.</canvas>
 	<ul class="clickRightMenu" id="clickRightMenu">
 		<li class="i18n" i18n-key="button.place" id="right-click-place"></li>
+		<li class="i18n" i18n-key="button.place-object" id="right-click-place-object"></li>
 		<li class="i18n" i18n-key="button.select" id="right-click-select"></li>
 		<li class="i18n" i18n-key="button.clear" id="right-click-clear"></li>
+		<li class="i18n" i18n-key="button.clear-object" id="right-click-clear-object"></li>
 		<li class="i18n" i18n-key="button.tile" id="right-click-tile"></li>
 		<li class="i18n" i18n-key="button.cancel" id="right-click-cancel"></li>
+	</ul>
+	<ul class="clickRightMenu" id="clickRightMenuLeft">
+		<li class="i18n" i18n-key="button.select-palette" id="right-select-palette"></li>
+		<li class="i18n" i18n-key="button.clear" id="right-click-clear-2"></li>
+		<li class="i18n" i18n-key="button.clear-object" id="right-click-clear-object-2"></li>
+		<li class="i18n" i18n-key="button.cancel" id="right-click-cancel-2"></li>
 	</ul>
 	<script type="text/javascript">
 		const MAX_SHOWN = 25;
@@ -185,6 +202,7 @@
 		}
 		
 		var clickRightHtml = document.getElementById("clickRightMenu");
+		var clickRightHtml2 = document.getElementById("clickRightMenuLeft");
 		
 		var canvas = document.getElementById('canvas');
 		canvas.addEventListener('click', e => canvasClick(e));
@@ -199,18 +217,37 @@
 				paletteX = Math.floor((event.offsetX - 800) / 48);
 				paletteY = Math.floor(event.offsetY / 48) + paletteOffset;
 				redrawObjects();
+				clickRightHtml2.style.display = "none";
 				clickRightHtml.style.display = "block";
 				clickRightHtml.style.left = event.pageX + "px";
 				clickRightHtml.style.top = event.pageY + "px";
-				return false;
+			} else {
+				selectedX = Math.floor(event.offsetX / 32) + xOffset;
+				selectedY = Math.floor(event.offsetY / 32) + yOffset;
+				redraw();
+				clickRightHtml.style.display = "none";
+				clickRightHtml2.style.display = "block";
+				clickRightHtml2.style.left = event.pageX + "px";
+				clickRightHtml2.style.top = event.pageY + "px";
 			}
-			return true;
+			return false;
 		}
 		document.getElementById("right-click-place").addEventListener('click', e => {
 			clickRightHtml.style.display = "none";
 			if(paletteX > -1 && paletteY > -1) {
 				if(selectedX > -1 && selectedY > -1) {
 					bgtiles[layer][selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
+					redraw();
+				}
+				paletteX = paletteY = -1;
+				redrawObjects();
+			}
+		});
+		document.getElementById("right-click-place-object").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(paletteX > -1 && paletteY > -1) {
+				if(selectedX > -1 && selectedY > -1) {
+					objmap[selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
 					redraw();
 				}
 				paletteX = paletteY = -1;
@@ -224,6 +261,18 @@
 			clickRightHtml.style.display = "none";
 			if(selectedX > -1 && selectedY > -1) {
 				bgtiles[layer][selectedY][selectedX] = -1;
+				selectedX = selectedY = -1;
+				redraw();
+			}
+			if(paletteX > -1 && paletteY > -1) {
+				paletteX = paletteY = -1;
+				redrawObjects();
+			}
+		});
+		document.getElementById("right-click-clear-object").addEventListener('click', e => {
+			clickRightHtml.style.display = "none";
+			if(selectedX > -1 && selectedY > -1) {
+				objmap[selectedY][selectedX] = -1;
 				selectedX = selectedY = -1;
 				redraw();
 			}
@@ -253,6 +302,40 @@
 			if(paletteX > -1 && paletteY > -1) {
 				paletteX = paletteY = -1;
 				redrawObjects();
+			}
+		});
+		
+		document.getElementById("right-click-clear-2").addEventListener('click', e => {
+			clickRightHtml2.style.display = "none";
+			if(selectedX > -1 && selectedY > -1) {
+				bgtiles[layer][selectedY][selectedX] = -1;
+				selectedX = selectedY = -1;
+				redraw();
+			}
+		});
+		document.getElementById("right-click-clear-object-2").addEventListener('click', e => {
+			clickRightHtml2.style.display = "none";
+			if(selectedX > -1 && selectedY > -1) {
+				objmap[selectedY][selectedX] = -1;
+				selectedX = selectedY = -1;
+				redraw();
+			}
+		});
+		document.getElementById("right-click-cancel-2").addEventListener('click', e => {
+			clickRightHtml2.style.display = "none";
+		});
+		document.getElementById("right-select-palette").addEventListener('click', e => {
+			clickRightHtml2.style.display = "none";
+			if(selectedX > -1 && selectedY > -1) {
+				if(bgtiles[layer][selectedY][selectedX] < 0) {
+					paletteX = -1;
+					paletteY = -1;
+				} else {
+					paletteX = bgtiles[layer][selectedY][selectedX] % MAX_ROW_PALETTE;
+					paletteY = Math.floor(bgtiles[layer][selectedY][selectedX] / MAX_ROW_PALETTE);
+				}
+				selectedX = selectedY = -1;
+				redraw();
 			}
 		});
 		var ctx = canvas.getContext('2d');
@@ -460,8 +543,18 @@
 			}
 			document.getElementById("current-layer").max = bgtiles.length - 1;
 		}
+		function clearLayer() {
+			for(let i = 0; i < screenxtiles; ++i) {
+				for(let j = 0; j < screenytiles; ++j) {
+					bgtiles[layer][i][j] = -1;
+				}
+			}
+			redraw();
+		}
 		
 		function canvasClick(e) {
+			clickRightHtml.style.display = "none";
+			clickRightHtml2.style.display = "none";
 			if(e.offsetX < 800) {
 				selectedX = Math.floor(e.offsetX / 32) + xOffset;
 				selectedY = Math.floor(e.offsetY / 32) + yOffset;
@@ -496,6 +589,8 @@
 		
 		function onMouseWheel(e) {
 			e.preventDefault();
+			clickRightHtml.style.display = "none";
+			clickRightHtml2.style.display = "none";
 			if(e.offsetX < 800) {
 				if(e.deltaY > 0) {
 					document.getElementById("y-offset").value = yOffset + 1;
@@ -518,7 +613,7 @@
 				selectedX = Math.floor(e.offsetX / 32) + xOffset;
 				selectedY = Math.floor(e.offsetY / 32) + yOffset;
 				bgtiles[layer][selectedY][selectedX] = paletteY * MAX_ROW_PALETTE + paletteX;
-			redraw();
+				redraw();
 			}
 		}
 	</script>
