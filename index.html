@@ -336,6 +336,7 @@
 				}
 				selectedX = selectedY = -1;
 				redraw();
+				redrawObjects();
 			}
 		});
 		var ctx = canvas.getContext('2d');
@@ -401,23 +402,8 @@
 		
 		function redraw() {
 			ctx.clearRect(0, 0, 800, 800);
-			ctx.fillStyle = "rgba(240, 8, 24, 0.1)";
+			ctx.fillStyle = "rgba(240, 8, 24, 0.05)";
 			ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
-			for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
-				for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
-					if(selectedX == i && selectedY == j) {
-						ctx.fillStyle = "rgba(252, 2, 14, 0.5)";
-						ctx.strokeStyle = "rgba(6, 18, 252, 0.5)";
-						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
-						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
-						ctx.fillStyle = "rgba(240, 8, 24, 0.1)";
-						ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
-					} else {
-						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
-						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
-					}
-				}
-			}
 			for(let l = 0; l <= layer; ++l) {
 				for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
 					for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
@@ -425,6 +411,21 @@
 							xy = index2xy(bgtiles[l][j][i]);
 							ctx.drawImage(img, xy[1] * 32, xy[0] * 32, 32, 32, (i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
 						}
+					}
+				}
+			}
+			for(let i = xOffset; i < xOffset + MAX_SHOWN && i < screenxtiles; i += 1) {
+				for(let j = yOffset; j < yOffset + MAX_SHOWN && j < screenytiles; j += 1) {
+					if(selectedX == i && selectedY == j) {
+						ctx.fillStyle = "rgba(252, 2, 14, 0.5)";
+						ctx.strokeStyle = "rgba(6, 18, 252, 0.5)";
+						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.fillStyle = "rgba(240, 8, 24, 0.05)";
+						ctx.strokeStyle = "rgba(8, 24, 240, 0.25)";
+					} else {
+						ctx.fillRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
+						ctx.strokeRect((i - xOffset) * 32, (j - yOffset) * 32, 32, 32);
 					}
 				}
 			}
